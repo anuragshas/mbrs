@@ -22,7 +22,7 @@ class MetricCOMET(MetricCacheable, MetricAggregatable):
         - fp16 (bool): Use float16 for the forward computation.
         - bf16 (bool): Use bfloat16 for the forward computation.
         - cpu (bool): Use CPU for the forward computation.
-        - checkpoint_path (str): Path to model checkpoint file. 
+        - checkpoint_path (str): Path to model checkpoint file.
         """
 
         model: str = "Unbabel/wmt22-comet-da"
