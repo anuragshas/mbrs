@@ -11,7 +11,9 @@ from tqdm import tqdm
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
-    M2M100ForConditionalGeneration,
+    M2M100Tokenizer,
+    NllbTokenizer,
+    NllbTokenizerFast,
     set_seed,
 )
 from transformers.generation.utils import GenerateOutput, GenerationMixin
@@ -253,9 +255,15 @@ def main(args: Namespace) -> None:
     if args.lprobs is not None or args.length_normalized_lprobs is not None:
         generation_kwargs["output_scores"] = True
 
-    if isinstance(model, M2M100ForConditionalGeneration):
+    if isinstance(tokenizer, M2M100Tokenizer):
         tokenizer.src_lang = src_lang
         generation_kwargs["forced_bos_token_id"] = tokenizer.get_lang_id(tgt_lang)
+
+    if isinstance(tokenizer, NllbTokenizer) or isinstance(tokenizer, NllbTokenizerFast):
+        tokenizer.src_lang = src_lang
+        generation_kwargs["forced_bos_token_id"] = tokenizer.convert_tokens_to_ids(
+            tgt_lang
+        )
 
     if args.sampling == "eps":
         generation_kwargs["do_sample"] = True
