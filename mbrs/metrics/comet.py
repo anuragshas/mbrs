@@ -22,6 +22,7 @@ class MetricCOMET(MetricCacheable, MetricAggregatable):
         - fp16 (bool): Use float16 for the forward computation.
         - bf16 (bool): Use bfloat16 for the forward computation.
         - cpu (bool): Use CPU for the forward computation.
+        - checkpoint_path (str): Path to model checkpoint file. 
         """
 
         model: str = "Unbabel/wmt22-comet-da"
@@ -29,10 +30,14 @@ class MetricCOMET(MetricCacheable, MetricAggregatable):
         fp16: bool = False
         bf16: bool = False
         cpu: bool = False
+        checkpoint_path: str = ""
 
     def __init__(self, cfg: MetricCOMET.Config):
         self.cfg = cfg
-        self.scorer = load_from_checkpoint(download_model(cfg.model))
+        if cfg.checkpoint_path:
+            self.scorer = load_from_checkpoint(cfg.checkpoint_path)
+        else:
+            self.scorer = load_from_checkpoint(download_model(cfg.model))
         self.scorer.eval()
         for param in self.scorer.parameters():
             param.requires_grad = False
